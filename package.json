@@ -1,0 +1,55 @@
+{
+  "name": "hades-injector",
+  "version": "1.0.0",
+  "description": "injector for the GTAV hades mod menu",
+  "main": "src/index.js",
+  "build": {
+    "appId": "hadesinjector",
+    "dmg": {
+      "contents": [
+        {
+          "x": 110,
+          "y": 150
+        },
+        {
+          "x": 240,
+          "y": 150,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ]
+    },
+    "win": {
+      "target": "NSIS",
+      "icon": "build/icon.ico"
+    }
+  },
+  "dependencies": {
+    "adm-zip": "^0.4.13",
+    "fs": "0.0.1-security",
+    "ncp": "^2.0.0",
+    "request": "^2.88.0"
+  },
+  "devDependencies": {
+    "babel-plugin-transform-async-to-generator": "^6.24.1",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-react": "^6.24.1",
+    "electron-builder": "^20.44.4",
+    "electron-forge": "^5.2.4",
+    "electron-prebuilt-compile": "4.0.0"
+  },
+  "scripts": {
+    "test": ".\\node_modules\\electron\\dist\\electron.exe src/index.js",
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
+  },
+  "author": "wagyourtail",
+  "license": "ISC"
+}

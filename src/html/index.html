@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../css/index.css">
+    <title>Hades Client</title>
+</head>
+<body>
+    <div id="titlebar">
+        <div id="title"><b>Hades Client</b> &nbsp; by WagYourTail</div>
+        <div id="empty"></div>
+        <div id="minBtn"><svg name="TitleBarMinimize" width="12" height="12" viewBox="0 0 12 12"><rect fill="#ffffff" width="10" height="1" x="1" y="6"></rect></svg></div>
+        <div id="closeBtn"><svg name="TitleBarClose" width="12" height="12" viewBox="0 0 12 12"><polygon fill="#ffffff" fill-rule="evenodd" points="11 1.576 6.583 6 11 10.424 10.424 11 6 6.583 1.576 11 1 10.424 5.417 6 1 1.576 1.576 1 6 5.417 10.424 1"></polygon></svg></div>
+    </div>
+
+    <div id="content">
+        <div id="login">
+            <input type="text" class="input" id="loginField" name="login" placeholder="Username/E-Mail" />
+            <input type="password" class="input" id="passwordField" name="password" placeholder="Password"/>
+            <div id='loginButton'>Login</div>
+        </div>
+        <div id='loggedIn' style="display: none;">Logged In</div>
+        <div id="changelog">
+        </div>
+        <div id="runButton">
+            <div id="versionSelect" style="display: none;"></div>
+            <div id="play"><b>Inject!</b><div id="vernum">NaN</div></div>
+            <div id="version">↑</div>
+        </div>
+    </div>
+    <script src="../js/index.js"></script>
+</body>
+</html>
