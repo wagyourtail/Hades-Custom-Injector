@@ -14,17 +14,20 @@
     </div>
 
     <div id="content">
-        <div id="login">
+        <div id="loginForm">
             <input type="text" class="input" id="loginField" name="login" placeholder="Username/E-Mail" />
             <input type="password" class="input" id="passwordField" name="password" placeholder="Password"/>
             <div id='loginButton'>Login</div>
         </div>
-        <div id='loggedIn' style="display: none;">Logged In</div>
-        <div id="changelog">
+        <div id='banner' style="display: none;"></div>
+        <div id="changelog" style="display: none;">
             <div id="changelogTitle"><u>Changes In This Version</u></div>
             <p id="changelogText"></p>
         </div>
-        <div id="runButton">
+        <video id="video" autoplay="autoplay" loop="loop" muted="muted" width=420 height="600">
+            <source src="https://hadesgta.com/MarbleBG_SmokeLoop.mp4" type="video/mp4">
+        </video>
+        <div id="runButton" style="display: none;">
             <div id="versionSelect" style="max-height: 0px;"></div>
             <div id="selectButtons">
                 <div id="play"><div id="inject">Inject!</div><div id="vernum">NaN</div></div>

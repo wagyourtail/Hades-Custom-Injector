@@ -26,7 +26,10 @@ function login() {
                 saveData.login = formData.login;
                 saveData.password = formData.password;
                 writeJSON(`${process.env.APPDATA}/hades-cli/data.json`, saveData);
-                loggedIn.style = null;
+                banner.style = null;
+                changelog.style = null;
+                runButton.style = null;
+                loginForm.style.display = "none";
                 resolve();
             } else {
                 reject();
@@ -84,6 +87,8 @@ function autoUpdate() {
             setVersion(vers[0].id)
             writeJSON(`${process.env.APPDATA}/hades-cli/data.json`, saveData);
         });
+    }).catch(()=> {
+        alert("failed to log in");
     });
 }
 
@@ -93,7 +98,7 @@ function setVersion(ver) {
     arrow.style.transform = "rotate(0deg)";
     request({url:saveData.vers[ver].href, headers: {Cookie:loginCookie}}, (err, res, body) => {
         let http = new DOMParser().parseFromString(body, "text/html");
-        changelogText.innerHTML = http.getElementsByClassName("bbWrapper")[0].innerHTML;
+        changelogText.innerHTML = http.getElementsByClassName("bbWrapper")[0].innerHTML.split("href=").join("blocked=");
         saveData.vers[ver].dlLink = http.getElementsByClassName("attachment-icon")[0].getElementsByTagName("a")[0].href.replace(/file:\/\/\/[A-Z]:/, "https://hadesgta.com");
         writeJSON(`${process.env.APPDATA}/hades-cli/data.json`, saveData);
     });
@@ -103,10 +108,14 @@ async function inject() {
     if (!fs.existsSync(`${process.env.APPDATA}/hades-cli/${vernum.innerHTML}/`) && !fs.existsSync(`${process.env.APPDATA}/hades-cli/${vernum.innerHTML}.zip`)) {
         await new Promise((resolve,reject) => {
             console.log("downloading...")
-            request.get({url:saveData.vers[vernum.innerHTML].dlLink, headers: {Cookie:loginCookie}}).on('close', () => {resolve()}).pipe(fs.createWriteStream(`${process.env.APPDATA}/hades-cli/${vernum.innerHTML}.zip`));
+            if(!saveData.vers[vernum.innerHTML].dlLink) {
+                alert("it appears this download link was removed, sorry.");
+            } else {
+                request.get({url:saveData.vers[vernum.innerHTML].dlLink, headers: {Cookie:loginCookie}}).on('close', () => {resolve()}).pipe(fs.createWriteStream(`${process.env.APPDATA}/hades-cli/${vernum.innerHTML}.zip`));
+            }
         });
     }
-    if (!fs.existsSync(`${process.env.APPDATA}/hades-cli/${vernum.innerHTML}/`)) {
+    if (!fs.existsSync(`${process.env.APPDATA}/hades-cli/${vernum.innerHTML}/`) && fs.existsSync(`${process.env.APPDATA}/hades-cli/${vernum.innerHTML}.zip`)) {
         fs.mkdirSync(`${process.env.APPDATA}/hades-cli/${vernum.innerHTML}/`);
         let zip = new admzip(`${process.env.APPDATA}/hades-cli/${vernum.innerHTML}.zip`);
         zip.extractAllTo(`${process.env.APPDATA}/hades-cli/${vernum.innerHTML}/`, false);
@@ -152,4 +161,3 @@ if (fs.existsSync(`${process.env.APPDATA}/hades-cli/data.json`)) {
         autoUpdate()
     });
 }
-
