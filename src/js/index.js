@@ -89,10 +89,11 @@ function autoUpdate() {
 
 function setVersion(ver) {
     vernum.innerHTML = ver;
-    versionSelect.style.display = "none";
+    versionSelect.style.maxHeight = "0px";
+    arrow.style.transform = "rotate(0deg)";
     request({url:saveData.vers[ver].href, headers: {Cookie:loginCookie}}, (err, res, body) => {
         let http = new DOMParser().parseFromString(body, "text/html");
-        changelog.innerHTML = http.getElementsByClassName("bbWrapper")[0].innerHTML;
+        changelogText.innerHTML = http.getElementsByClassName("bbWrapper")[0].innerHTML;
         saveData.vers[ver].dlLink = http.getElementsByClassName("attachment-icon")[0].getElementsByTagName("a")[0].href.replace(/file:\/\/\/[A-Z]:/, "https://hadesgta.com");
         writeJSON(`${process.env.APPDATA}/hades-cli/data.json`, saveData);
     });
@@ -131,10 +132,12 @@ async function inject() {
 }
 
 function showVers() {
-    if (versionSelect.style.display) {
-        versionSelect.style = null;
+    if (versionSelect.style.maxHeight == "0px") {
+        versionSelect.style.maxHeight = "300px";
+        arrow.style.transform = "rotate(180deg)";
     } else {
-        versionSelect.style.display = "none";
+        versionSelect.style.maxHeight = "0px";
+        arrow.style.transform = "rotate(0deg)";
     }
 }
 

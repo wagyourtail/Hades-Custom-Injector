@@ -3,6 +3,9 @@ body {
     margin:0px;
     overflow: hidden;
     background-color: rgb(40,40,40);
+    font-family: monospace;
+    user-select: none;
+
 }
 
 ::-webkit-scrollbar { 
@@ -13,6 +16,7 @@ body {
     -webkit-app-region:drag;
     cursor: pointer;
     color: white;
+    line-height: 20px;
 }
 
 #titlebar {
@@ -25,6 +29,7 @@ body {
     border-bottom-color: black;
     background-color: rgb(60,60,60);
     -webkit-user-select: none;
+    line-height: 20px;
 }
 
 #titlebar div {
@@ -39,9 +44,6 @@ body {
 #closeBtn:hover {
     background-color: #ff2222;
 }
-
-
-
 
 
 #login {
@@ -78,16 +80,26 @@ body {
     z-index: 1;
     height: 63px;
     line-height: 63px;
-    background-color: rgba(0,0,0,.2);
+    background-color: rgba(0,0,0,.4);
     color: white;
+    cursor: default;
+    font-size: 1.5em;
 }
 
 
 #changelog {
     margin-top: 20px;
+    padding: 10px;
     color: white;
     overflow: scroll;
-    max-height: 400px;
+    height: 420px;
+    border-bottom: 4px solid rgb(60,60,60);
+}
+
+#changelogTitle {
+    text-align: center;
+    font-size: 2em;
+    font-family: Impact;
 }
 
 #runButton {
@@ -96,15 +108,19 @@ body {
     bottom: 10px;
     left: 0px;
     width: 100%;
-    text-align: center;
+}
+
+#selectButtons {
+    display: grid;
+    grid-template-columns: 200px 30px;
+    margin-left: 97.5px;
 }
 
 #play {
-    width: 200px;
-    height: 50px;
-    background-color: rgb(0,200,0);
+    padding-top:5px;
+    height: 45px;
+    background-color: rgb(0,150,0);
     font-size: 1.4em;
-    line-height: 25px;
     text-align: center;
     color: white;
     margin-right: 5px;
@@ -113,17 +129,20 @@ body {
 }
 
 #vernum {
-    font-size: .4em;
+    font-size: .6em;
 }
 
 #play:hover {
-    background-color: rgb(0,140,0);
+    background-color: rgb(0,100,0);
+}
+
+#inject {
+    font-family: Impact;
 }
 
 #version {
-    width: 20px;
     height: 50px;
-    background-color: rgb(0,200,0);
+    background-color: rgb(0,150,0);
     font-size: 2em;
     line-height: 50px;
     text-align: center;
@@ -135,25 +154,36 @@ body {
 
 
 #version:hover {
-    background-color: rgb(0,140,0);
+    background-color: rgb(0,100,0);
 }
 
 #versionSelect {
-    width: 225px;
-    height: 400px;
+    width: 230px;
     display: inline-block;
-    margin-bottom: 10px;
-    background-color: rgb(0,200,0);
+    margin-bottom: 0px;
+    margin-left: 95.5px;
+    background-color: rgb(0,150,0);
     overflow: scroll;
+    transition: max-height .25s linear;
+    border: 2px solid rgb(60,60,60);
+}
+
+#arrow {
+    transition: transform .25s linear;
 }
 
 .versionBtn {
-    background-color: rgb(0,200,0);
-    border-bottom: 2px solid rgb(0,140,0);
+    font-family: Impact;
+    background-color: rgb(0,150,0);
+    border-bottom: 2px solid rgb(0,100,0);
+    font-size: 2em;
+    color: white;
     height: 50px;
+    text-align: center;
+    line-height: 50px;
     cursor: pointer;
 }
 
 .versionBtn:hover {
-    background-color: rgb(0,140,0);
+    background-color: rgb(0,100,0);
 }
