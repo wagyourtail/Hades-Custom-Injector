@@ -120,13 +120,7 @@ async function inject() {
     fs.copyFileSync(`${process.env.APPDATA}/hades-cli/${vernum.innerHTML}/Hades/Hades CFG.ini`, `${process.env.APPDATA}/Hades/Hades CFG.ini`)
     fs.copyFileSync(`${process.env.APPDATA}/hades-cli/${vernum.innerHTML}/Hades/Hades.ytd`, `${process.env.APPDATA}/Hades/Hades.ytd`)
     fs.writeFileSync(`${process.env.APPDATA}/Hades/Hades CFG.ini`, fs.readFileSync(`${process.env.APPDATA}/Hades/Hades CFG.ini`, 'utf8').replace("YOUR USERNAME", saveData.login).replace("YOUR PASSWORD", saveData.password), 'utf8');
-    if (!fs.existsSync(`${process.env.APPDATA}/hades-cli/core.exe`)) {
-        await new Promise((resolve,reject) => {
-            console.log("downloading core.exe...")
-            request.get("https://cdn.discordapp.com/attachments/115199460597825544/598124091504984084/core.exe").on('close', () => {resolve()}).pipe(fs.createWriteStream(`${process.env.APPDATA}/hades-cli/core.exe`));
-        });
-    }
-    exec(`"${process.env.APPDATA}/hades-cli/core.exe" -n GTA5.exe -i "${process.env.APPDATA}/hades-cli/${vernum.innerHTML}/Hades.dll"`, (err,stdout,stderr)=>{
+    exec(`"${process.cwd()}/resources/injector/core.exe" -n GTA5.exe -i "${process.env.APPDATA}/hades-cli/${vernum.innerHTML}/Hades.dll"`, (err,stdout,stderr)=>{
         alert(`${stdout}\n${stderr}`)
     });
 }

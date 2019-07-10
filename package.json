@@ -1,6 +1,6 @@
 {
   "name": "hades-injector",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "injector for the GTAV hades mod menu",
   "main": "src/index.js",
   "build": {
@@ -27,8 +27,18 @@
     },
     "win": {
       "target": "NSIS",
-      "icon": "build/icon.ico"
-    }
+      "icon": "build/icon.ico",
+	  "requestedExecutionLevel": "requireAdministrator"
+    },
+    "extraResources": [
+      {
+        "from": "./resources/injector/",
+        "to": "injector",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ]
   },
   "dependencies": {
     "adm-zip": "^0.4.13",
