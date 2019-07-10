@@ -20,7 +20,7 @@ function createWindow() {
 
 
     //win.setFullScreen(true);
-    //win.setResizable(false);
+    win.setResizable(false);
     
     win.on('closed', () => {
         win = null;
