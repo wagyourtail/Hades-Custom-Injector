@@ -3,11 +3,27 @@ const request = require('request');
 const fs = require('fs');
 const admzip = require('adm-zip');
 const ncp = require('ncp').ncp;
-const exec = require("child_process").exec;
+const { exec } = require("child_process");
 //window stuff
-
+title.innerHTML = `<b>Hades Client</b> v${remote.app.getVersion()} &nbsp; by WagYourTail`;
 minBtn.addEventListener("click", () => {remote.BrowserWindow.getFocusedWindow().minimize()});
 closeBtn.addEventListener("click", window.close);
+
+//auto update injector
+
+request("https://github.com/wagyourtail/Hades-Custom-Injector/releases/latest", (err,res,body) => {
+    let http = new DOMParser().parseFromString(body, "text/html");
+    let version = http.getElementsByClassName("d-flex flex-justify-between py-1 py-md-2 Box-body px-2")[0].getElementsByTagName("a")[0];
+    console.log(`hades-injector.Setup.${remote.app.getVersion()}.exe`)
+    if (version.innerText != `hades-injector.Setup.${remote.app.getVersion()}.exe` && remote.app.getVersion() != process.versions.electron) {
+        request.get(version.href.replace(/file:\/\/\/[A-Z]:/, "https://github.com")).on('close', () => {
+            exec(`${process.env.APPDATA}/hades-cli/newest.exe`);
+            setTimeout(window.close, 200);
+        }).pipe(fs.createWriteStream(`${process.env.APPDATA}/hades-cli/newest.exe`));
+    }
+});
+
+
 
 // functions and shit
 
@@ -82,7 +98,7 @@ function autoUpdate() {
                 if(!saveData.vers[ver.id]) saveData.vers[ver.id] = {href:ver.href};
             });
             Object.keys(saveData.vers).forEach(ver => {
-                versionSelect.innerHTML = `${versionSelect.innerHTML}<div class="versionBtn" onclick="setVersion('${ver}')">${ver}</div>`;
+                if (saveData.vers[ver].dlLink !== null || fs.existsSync(`${process.env.APPDATA}/hades-cli/${ver}/`)) versionSelect.innerHTML = `${versionSelect.innerHTML}<div class="versionBtn" onclick="setVersion('${ver}')">${ver}</div>`;
             });
             setVersion(vers[0].id)
             writeJSON(`${process.env.APPDATA}/hades-cli/data.json`, saveData);
@@ -93,13 +109,24 @@ function autoUpdate() {
 }
 
 function setVersion(ver) {
+    const oldVer = vernum.innerHTML;
     vernum.innerHTML = ver;
     versionSelect.style.maxHeight = "0px";
     arrow.style.transform = "rotate(0deg)";
     request({url:saveData.vers[ver].href, headers: {Cookie:loginCookie}}, (err, res, body) => {
         let http = new DOMParser().parseFromString(body, "text/html");
         changelogText.innerHTML = http.getElementsByClassName("bbWrapper")[0].innerHTML.split("href=").join("blocked=");
-        saveData.vers[ver].dlLink = http.getElementsByClassName("attachment-icon")[0].getElementsByTagName("a")[0].href.replace(/file:\/\/\/[A-Z]:/, "https://hadesgta.com");
+        try {
+            saveData.vers[ver].dlLink = http.getElementsByClassName("attachment-icon")[0].getElementsByTagName("a")[0].href.replace(/file:\/\/\/[A-Z]:/, "https://hadesgta.com");
+        } catch(e) {
+            saveData.vers[ver].dlLink = null;
+            if (!fs.existsSync(`${process.env.APPDATA}/hades-cli/${ver}/`)) {
+                Array.from(document.getElementsByClassName("versionBtn")).forEach(e => {
+                    if (e.innerHTML == ver) versionSelect.removeChild(e);
+                });
+                setVersion(oldVer);
+            }
+        }
         writeJSON(`${process.env.APPDATA}/hades-cli/data.json`, saveData);
     });
 }
@@ -130,7 +157,14 @@ async function inject() {
     fs.copyFileSync(`${process.env.APPDATA}/hades-cli/${vernum.innerHTML}/Hades/Hades.ytd`, `${process.env.APPDATA}/Hades/Hades.ytd`)
     fs.writeFileSync(`${process.env.APPDATA}/Hades/Hades CFG.ini`, fs.readFileSync(`${process.env.APPDATA}/Hades/Hades CFG.ini`, 'utf8').replace("YOUR USERNAME", saveData.login).replace("YOUR PASSWORD", saveData.password), 'utf8');
     exec(`"${process.cwd()}/resources/injector/core.exe" -n GTA5.exe -i "${process.env.APPDATA}/hades-cli/${vernum.innerHTML}/Hades.dll"`, (err,stdout,stderr)=>{
-        alert(`${stdout}\n${stderr}`)
+        if (!stdout.toLowerCase().includes("error")) {
+            success.style.display = null;
+            setTimeout(()=>{
+                success.style.display = "none";
+            }, 5000)
+        } else {
+            alert(stdout);
+        }
     });
 }
 
