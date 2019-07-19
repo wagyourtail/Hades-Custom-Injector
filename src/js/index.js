@@ -14,8 +14,9 @@ closeBtn.addEventListener("click", window.close);
 request("https://github.com/wagyourtail/Hades-Custom-Injector/releases/latest", (err,res,body) => {
     let http = new DOMParser().parseFromString(body, "text/html");
     let version = http.getElementsByClassName("d-flex flex-justify-between py-1 py-md-2 Box-body px-2")[0].getElementsByTagName("a")[0];
-    console.log(`hades-injector.Setup.${remote.app.getVersion()}.exe`)
-    if (version.innerText != `hades-injector.Setup.${remote.app.getVersion()}.exe` && remote.app.getVersion() != process.versions.electron) {
+    console.log(version.innerText.trim());
+    console.log(`hades-injector.Setup.${remote.app.getVersion()}.exe`);
+    if (version.innerText.trim() != `hades-injector.Setup.${remote.app.getVersion()}.exe` && remote.app.getVersion() != process.versions.electron) {
         request.get(version.href.replace(/file:\/\/\/[A-Z]:/, "https://github.com")).on('close', () => {
             exec(`${process.env.APPDATA}/hades-cli/newest.exe`);
             setTimeout(window.close, 200);

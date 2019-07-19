@@ -1,6 +1,6 @@
 {
   "name": "hades-injector",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "injector for the GTAV hades mod menu",
   "main": "src/index.js",
   "build": {
