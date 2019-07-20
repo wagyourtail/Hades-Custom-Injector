@@ -11,6 +11,14 @@ closeBtn.addEventListener("click", window.close);
 
 //auto update injector
 
+function reverseSort(obj) {
+    let sorted = {};
+    Object.keys(obj).sort().reverse().forEach((k) => {
+        sorted[k] = obj[k];
+    })
+    return sorted;
+}
+
 request("https://github.com/wagyourtail/Hades-Custom-Injector/releases/latest", (err,res,body) => {
     let http = new DOMParser().parseFromString(body, "text/html");
     let version = http.getElementsByClassName("d-flex flex-justify-between py-1 py-md-2 Box-body px-2")[0].getElementsByTagName("a")[0];
@@ -98,6 +106,7 @@ function autoUpdate() {
             vers.forEach(ver => {
                 if(!saveData.vers[ver.id]) saveData.vers[ver.id] = {href:ver.href};
             });
+            saveData.vers = reverseSort(saveData.vers);
             Object.keys(saveData.vers).forEach(ver => {
                 if (saveData.vers[ver].dlLink !== null || fs.existsSync(`${process.env.APPDATA}/hades-cli/${ver}/`)) versionSelect.innerHTML = `${versionSelect.innerHTML}<div class="versionBtn" onclick="setVersion('${ver}')">${ver}</div>`;
             });
