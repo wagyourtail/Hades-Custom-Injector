@@ -67,10 +67,10 @@ function versions() {
     return new Promise((resolve,reject) => {
         request({url:'https://hadesgta.com/forum/index.php?forums/15/', headers: {Cookie:loginCookie}}, (err, res, body) => {
             let http = new DOMParser().parseFromString(body, "text/html");
-            let vers = [];
+            let vers = {};
             Array.from(http.getElementsByClassName("structItem-title")).forEach((e) => {
                 let ver = Array.from(e.getElementsByTagName("a")).slice(-1)[0];
-                vers.push({id:ver.innerHTML.match(/\d+\.\d+\.\d+.*/), href:ver.href.replace(/file:\/\/\/[A-Z]:/, "https://hadesgta.com")});
+                vers[ver.innerHTML.match(/\d+\.\d+\.\d+.*/)] = {href:ver.href.replace(/file:\/\/\/[A-Z]:/, "https://hadesgta.com")};
             });
             resolve(vers);
         });
@@ -103,14 +103,13 @@ function openJSON(JSONFile) {
 function autoUpdate() {
     login().then(() => {
         versions().then(vers => {
-            vers.forEach(ver => {
-                if(!saveData.vers[ver.id]) saveData.vers[ver.id] = {href:ver.href};
-            });
-            saveData.vers = reverseSort(saveData.vers);
-            Object.keys(saveData.vers).forEach(ver => {
-                if (saveData.vers[ver].dlLink !== null || fs.existsSync(`${process.env.APPDATA}/hades-cli/${ver}/`)) versionSelect.innerHTML = `${versionSelect.innerHTML}<div class="versionBtn" onclick="setVersion('${ver}')">${ver}</div>`;
-            });
-            setVersion(vers[0].id)
+            Object.keys(vers).forEach(ver => {
+                vers[ver].dlLink = saveData.vers[ver].dlLink;
+                console.log(`vers`)
+                if (vers[ver].dlLink !== null || fs.existsSync(`${process.env.APPDATA}/hades-cli/${ver}/`)) versionSelect.innerHTML = `${versionSelect.innerHTML}<div class="versionBtn" onclick="setVersion('${ver}')"><div>${ver}</div></div>`;
+            })
+            saveData.vers = vers;
+            setVersion(Object.keys(vers)[0])
             writeJSON(`${process.env.APPDATA}/hades-cli/data.json`, saveData);
         });
     }).catch(()=> {

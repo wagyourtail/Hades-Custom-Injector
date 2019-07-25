@@ -213,10 +213,16 @@ body {
     background-color: rgb(150,0,0);
     border-bottom: 2px solid rgb(100,0,0);
     color: white;
-    height: 50px;
-    text-align: center;
-    line-height: 50px;
     cursor: pointer;
+    height: 50px;
+}
+
+.versionBtn > div {
+    height: 50px;
+    width:230px;
+    text-align: center;
+    display: table-cell;
+    vertical-align: middle;
 }
 
 .versionBtn:hover {
