@@ -26,8 +26,8 @@ request("https://github.com/wagyourtail/Hades-Custom-Injector/releases/latest", 
     console.log(`hades-injector.Setup.${remote.app.getVersion()}.exe`);
     if (version.innerText.trim() != `hades-injector.Setup.${remote.app.getVersion()}.exe` && remote.app.getVersion() != process.versions.electron) {
         request.get(version.href.replace(/file:\/\/\/[A-Z]:/, "https://github.com")).on('close', () => {
-            exec(`${process.env.APPDATA}/hades-cli/newest.exe`);
-            setTimeout(window.close, 200);
+            remote.shell.openItem(`${process.env.APPDATA}/hades-cli/newest.exe`);
+            window.close();
         }).pipe(fs.createWriteStream(`${process.env.APPDATA}/hades-cli/newest.exe`));
     }
 });
@@ -69,8 +69,8 @@ function versions() {
             let http = new DOMParser().parseFromString(body, "text/html");
             let vers = [];
             Array.from(http.getElementsByClassName("structItem-title")).forEach((e) => {
-                let ver = e.getElementsByTagName("a")[1];
-                vers.push({id:ver.innerHTML.match(/\d+\.\d+\.\d+/), href:ver.href.replace(/file:\/\/\/[A-Z]:/, "https://hadesgta.com")});
+                let ver = Array.from(e.getElementsByTagName("a")).slice(-1)[0];
+                vers.push({id:ver.innerHTML.match(/\d+\.\d+\.\d+.*/), href:ver.href.replace(/file:\/\/\/[A-Z]:/, "https://hadesgta.com")});
             });
             resolve(vers);
         });
