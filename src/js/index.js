@@ -104,7 +104,7 @@ function autoUpdate() {
     login().then(() => {
         versions().then(vers => {
             Object.keys(vers).forEach(ver => {
-                vers[ver].dlLink = saveData.vers[ver].dlLink;
+                vers[ver].dlLink = saveData.vers[ver] ? saveData.vers[ver].dlLink : undefined;
                 console.log(`vers`)
                 if (vers[ver].dlLink !== null || fs.existsSync(`${process.env.APPDATA}/hades-cli/${ver}/`)) versionSelect.innerHTML = `${versionSelect.innerHTML}<div class="versionBtn" onclick="setVersion('${ver}')"><div>${ver}</div></div>`;
             })
