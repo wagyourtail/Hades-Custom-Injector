@@ -162,9 +162,9 @@ async function inject() {
             resolve();
         });
     });
-    fs.copyFileSync(`${process.env.APPDATA}/hades-cli/${vernum.innerHTML}/Hades/Hades CFG.ini`, `${process.env.APPDATA}/Hades/Hades CFG.ini`)
-    fs.copyFileSync(`${process.env.APPDATA}/hades-cli/${vernum.innerHTML}/Hades/Hades.ytd`, `${process.env.APPDATA}/Hades/Hades.ytd`)
-    fs.writeFileSync(`${process.env.APPDATA}/Hades/Hades CFG.ini`, fs.readFileSync(`${process.env.APPDATA}/Hades/Hades CFG.ini`, 'utf8').replace("YOUR USERNAME", saveData.login).replace("YOUR PASSWORD", saveData.password), 'utf8');
+    let ConfigFile = fs.readFileSync(`${process.env.APPDATA}/Hades/Hades CFG.ini`, 'utf8').split("\n"); 
+    ConfigFile.splice(1,2,`Username=${saveData.login}`,`Password=${saveData.password}`);
+    fs.writeFileSync(`${process.env.APPDATA}/Hades/Hades CFG.ini`, ConfigFile.join("\n"), 'utf8');
     exec(`"${process.cwd()}/resources/injector/core.exe" -n GTA5.exe -i "${process.env.APPDATA}/hades-cli/${vernum.innerHTML}/Hades.dll"`, (err,stdout,stderr)=>{
         if (!stdout.toLowerCase().includes("error")) {
             success.style.display = null;
