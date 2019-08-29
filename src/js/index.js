@@ -1,6 +1,6 @@
 const { remote } = require('electron');
 const request = require('request');
-const fs = require('fs');
+const fs = require('fs-extra');
 const admzip = require('adm-zip');
 const ncp = require('ncp').ncp;
 const { exec } = require("child_process");
@@ -25,10 +25,14 @@ request("https://github.com/wagyourtail/Hades-Custom-Injector/releases/latest", 
     console.log(version.innerText.trim());
     console.log(`hades-injector.Setup.${remote.app.getVersion()}.exe`);
     if (version.innerText.trim() != `hades-injector.Setup.${remote.app.getVersion()}.exe` && remote.app.getVersion() != process.versions.electron) {
+        success.innerHTML = "Launcher Updating."
+        success.style.display = null;
         request.get(version.href.replace(/file:\/\/\/[A-Z]:/, "https://github.com")).on('close', () => {
-            remote.shell.openItem(`${process.env.APPDATA}/hades-cli/newest.exe`);
-            window.close();
-        }).pipe(fs.createWriteStream(`${process.env.APPDATA}/hades-cli/newest.exe`));
+            fs.writeFile(`${process.env.APPDATA}/hades-injector/localData/Versions/run.bat`, `TIMEOUT 1\n"${process.env.APPDATA}/hades-injector/localData/Versions/newest.exe"`,"utf-8", ()=> {
+                remote.shell.openExternalSync(`${process.env.APPDATA}/hades-injector/localData/Versions/run.bat`);
+                window.close();
+            });
+        }).pipe(fs.createWriteStream(`${process.env.APPDATA}/hades-injector/localData/Versions/newest.exe`));
     }
 });
 
@@ -50,7 +54,7 @@ function login() {
             if (loginCookie[1].startsWith("xf_session")) {
                 saveData.login = formData.login;
                 saveData.password = formData.password;
-                writeJSON(`${process.env.APPDATA}/hades-cli/data.json`, saveData);
+                writeJSON(`${process.env.APPDATA}/hades-injector/localData/Versions/data.json`, saveData);
                 banner.style = null;
                 changelog.style = null;
                 runButton.style = null;
@@ -106,11 +110,11 @@ function autoUpdate() {
             Object.keys(vers).forEach(ver => {
                 vers[ver].dlLink = saveData.vers[ver] ? saveData.vers[ver].dlLink : undefined;
                 console.log(`vers`)
-                if (vers[ver].dlLink !== null || fs.existsSync(`${process.env.APPDATA}/hades-cli/${ver}/`)) versionSelect.innerHTML = `${versionSelect.innerHTML}<div class="versionBtn" onclick="setVersion('${ver}')"><div>${ver}</div></div>`;
+                if (vers[ver].dlLink !== null || fs.existsSync(`${process.env.APPDATA}/hades-injector/localData/Versions/${ver}/`)) versionSelect.innerHTML = `${versionSelect.innerHTML}<div class="versionBtn" onclick="setVersion('${ver}')"><div>${ver}</div></div>`;
             })
             saveData.vers = vers;
             setVersion(Object.keys(vers)[0])
-            writeJSON(`${process.env.APPDATA}/hades-cli/data.json`, saveData);
+            writeJSON(`${process.env.APPDATA}/hades-injector/localData/Versions/data.json`, saveData);
         });
     }).catch(()=> {
         alert("failed to log in");
@@ -129,35 +133,35 @@ function setVersion(ver) {
             saveData.vers[ver].dlLink = http.getElementsByClassName("attachment-icon")[0].getElementsByTagName("a")[0].href.replace(/file:\/\/\/[A-Z]:/, "https://hadesgta.com");
         } catch(e) {
             saveData.vers[ver].dlLink = null;
-            if (!fs.existsSync(`${process.env.APPDATA}/hades-cli/${ver}/`)) {
+            if (!fs.existsSync(`${process.env.APPDATA}/hades-injector/localData/Versions//${ver}/`)) {
                 Array.from(document.getElementsByClassName("versionBtn")).forEach(e => {
                     if (e.innerHTML == ver) versionSelect.removeChild(e);
                 });
                 setVersion(oldVer);
             }
         }
-        writeJSON(`${process.env.APPDATA}/hades-cli/data.json`, saveData);
+        writeJSON(`${process.env.APPDATA}/hades-injector/localData/Versions//data.json`, saveData);
     });
 }
 
 async function inject() {
-    if (!fs.existsSync(`${process.env.APPDATA}/hades-cli/${vernum.innerHTML}/`) && !fs.existsSync(`${process.env.APPDATA}/hades-cli/${vernum.innerHTML}.zip`)) {
+    if (!fs.existsSync(`${process.env.APPDATA}/hades-injector/localData/Versions/${vernum.innerHTML}/`) && !fs.existsSync(`${process.env.APPDATA}/hades-injector/localData/Versions/${vernum.innerHTML}.zip`)) {
         await new Promise((resolve,reject) => {
             console.log("downloading...")
             if(!saveData.vers[vernum.innerHTML].dlLink) {
                 alert("it appears this download link was removed, sorry.");
             } else {
-                request.get({url:saveData.vers[vernum.innerHTML].dlLink, headers: {Cookie:loginCookie}}).on('close', () => {resolve()}).pipe(fs.createWriteStream(`${process.env.APPDATA}/hades-cli/${vernum.innerHTML}.zip`));
+                request.get({url:saveData.vers[vernum.innerHTML].dlLink, headers: {Cookie:loginCookie}}).on('close', () => {resolve()}).pipe(fs.createWriteStream(`${process.env.APPDATA}/hades-injector/localData/Versions/${vernum.innerHTML}.zip`));
             }
         });
     }
-    if (!fs.existsSync(`${process.env.APPDATA}/hades-cli/${vernum.innerHTML}/`) && fs.existsSync(`${process.env.APPDATA}/hades-cli/${vernum.innerHTML}.zip`)) {
-        fs.mkdirSync(`${process.env.APPDATA}/hades-cli/${vernum.innerHTML}/`);
-        let zip = new admzip(`${process.env.APPDATA}/hades-cli/${vernum.innerHTML}.zip`);
-        zip.extractAllTo(`${process.env.APPDATA}/hades-cli/${vernum.innerHTML}/`, false);
+    if (!fs.existsSync(`${process.env.APPDATA}/hades-injector/localData/Versions/${vernum.innerHTML}/`) && fs.existsSync(`${process.env.APPDATA}/hades-injector/localData/Versions/${vernum.innerHTML}.zip`)) {
+        fs.mkdirSync(`${process.env.APPDATA}/hades-injector/localData/Versions/${vernum.innerHTML}/`);
+        let zip = new admzip(`${process.env.APPDATA}/hades-injector/localData/Versions/${vernum.innerHTML}.zip`);
+        zip.extractAllTo(`${process.env.APPDATA}/hades-injector/localData/Versions/${vernum.innerHTML}/`, false);
     }
     await new Promise((resolve,reject) => {
-        ncp(`${process.env.APPDATA}/hades-cli/${vernum.innerHTML}/Hades`, `${process.env.APPDATA}/Hades`,{clobber:false}, (err) => {
+        ncp(`${process.env.APPDATA}/hades-injector/localData/Versions/${vernum.innerHTML}/Hades`, `${process.env.APPDATA}/Hades`,{clobber:false}, (err) => {
             console.log(err);
             resolve();
         });
@@ -165,11 +169,12 @@ async function inject() {
     let ConfigFile = fs.readFileSync(`${process.env.APPDATA}/Hades/Hades CFG.ini`, 'utf8').split("\n"); 
     ConfigFile.splice(1,2,`Username=${saveData.login}`,`Password=${saveData.password}`);
     fs.writeFileSync(`${process.env.APPDATA}/Hades/Hades CFG.ini`, ConfigFile.join("\n"), 'utf8');
-    exec(`"${process.cwd()}/resources/injector/core.exe" -n GTA5.exe -i "${process.env.APPDATA}/hades-cli/${vernum.innerHTML}/Hades.dll"`, (err,stdout,stderr)=>{
+    exec(`"${process.cwd()}/resources/injector/core.exe" -n GTA5.exe -i "${process.env.APPDATA}/hades-injector/localData/Versions/${vernum.innerHTML}/Hades.dll"`, (err,stdout,stderr)=>{
         if (!stdout.toLowerCase().includes("error")) {
             success.style.display = null;
             setTimeout(()=>{
                 success.style.display = "none";
+                window.close();
             }, 5000)
         } else {
             alert(stdout);
@@ -187,17 +192,34 @@ function showVers() {
     }
 }
 
+function settingsToggle() {
+    if (settingsContent.style.maxHeight == "0px") {
+        settingsContent.style.maxHeight = `${changelog.offsetHeight}px`;
+        settingsContent.style.height = `${changelog.offsetHeight}px`;
+    } else {
+        settingsContent.style.maxHeight = "0px";
+    }
+}
 
 loginButton.addEventListener("click", autoUpdate);
 version.addEventListener("click", showVers);
 play.addEventListener("click", inject);
+settings.addEventListener("click", settingsToggle)
 
 //init
-if (!fs.existsSync(`${process.env.APPDATA}/hades-cli/`)) {
-    fs.mkdirSync(`${process.env.APPDATA}/hades-cli/`);
+if (!fs.existsSync(`${process.env.APPDATA}/hades-injector/localData/Versions/`)) {
+    fs.mkdirSync(`${process.env.APPDATA}/hades-injector/localData/Versions/`, {recursive: true});
 }
-if (fs.existsSync(`${process.env.APPDATA}/hades-cli/data.json`)) {
-    openJSON(`${process.env.APPDATA}/hades-cli/data.json`).then(f => {
+
+//move old data if exists
+if (fs.existsSync(`${process.env.APPDATA}/hades-cli/`)) {
+    fs.moveSync(`${process.env.APPDATA}/hades-cli/`,`${process.env.APPDATA}/hades-injector/localData/Versions/`,  {overwrite: true});
+    fs.moveSync(`${process.env.APPDATA}/hades-injector/localData/Versions/data.json`, `${process.env.APPDATA}/hades-injector/localData/data.json`);
+    fs.unlinkSync(`${process.env.APPDATA}/hades-injector/localData/Versions/newest.exe`)
+}
+// startup auto login if available
+if (fs.existsSync(`${process.env.APPDATA}/hades-injector/localData/data.json`)) {
+    openJSON(`${process.env.APPDATA}/hades-injector/localData/data.json`).then(f => {
         loginField.value = f.login;
         passwordField.value = f.password;
         saveData = f;

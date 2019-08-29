@@ -1,6 +1,6 @@
 {
   "name": "hades-injector",
-  "version": "1.0.9",
+  "version": "1.1.1",
   "description": "injector for the GTAV hades mod menu",
   "main": "src/index.js",
   "build": {
@@ -43,6 +43,7 @@
   "dependencies": {
     "adm-zip": "^0.4.13",
     "fs": "0.0.1-security",
+    "fs-extra": "^8.1.0",
     "ncp": "^2.0.0",
     "request": "^2.88.0"
   },
@@ -51,7 +52,8 @@
     "electron-builder": "^20.44.4"
   },
   "scripts": {
-    "test": ".\\node_modules\\electron\\dist\\electron.exe .\\src\\index.js"
+    "test": ".\\node_modules\\electron\\dist\\electron.exe .\\src\\index.js",
+    "build": "electron-builder"
   },
   "author": "wagyourtail",
   "license": "ISC"
