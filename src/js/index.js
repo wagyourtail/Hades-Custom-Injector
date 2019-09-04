@@ -169,7 +169,8 @@ async function inject() {
     let ConfigFile = fs.readFileSync(`${process.env.APPDATA}/Hades/Hades CFG.ini`, 'utf8').split("\n"); 
     ConfigFile.splice(1,2,`Username=${saveData.login}`,`Password=${saveData.password}`);
     fs.writeFileSync(`${process.env.APPDATA}/Hades/Hades CFG.ini`, ConfigFile.join("\n"), 'utf8');
-    exec(`"${process.cwd()}/resources/injector/core.exe" -n GTA5.exe -i "${process.env.APPDATA}/hades-injector/localData/Versions/${vernum.innerHTML}/Hades.dll"`, (err,stdout,stderr)=>{
+    if (!fs.existsSync(`${process.env.APPDATA}/hades-injector/localData/Versions/${vernum.innerHTML}/Hades.dll`))
+    exec(`"${process.cwd()}/resources/injector/core.exe" -n GTA5.exe -i "${fs.existsSync(`${process.env.APPDATA}/hades-injector/localData/Versions/${vernum.innerHTML}/Hades.dll`) ? `${process.env.APPDATA}/hades-injector/localData/Versions/${vernum.innerHTML}/Hades.dll` : `${process.env.APPDATA}/hades-injector/localData/Versions/${vernum.innerHTML}/DeadlyKittens Injector/Hades.dll`}"`, (err,stdout,stderr)=>{
         if (!stdout.toLowerCase().includes("error")) {
             success.style.display = null;
             setTimeout(()=>{
@@ -204,18 +205,29 @@ function settingsToggle() {
 loginButton.addEventListener("click", autoUpdate);
 version.addEventListener("click", showVers);
 play.addEventListener("click", inject);
-settings.addEventListener("click", settingsToggle)
+settings.addEventListener("click", settingsToggle);
 
 //init
 if (!fs.existsSync(`${process.env.APPDATA}/hades-injector/localData/Versions/`)) {
     fs.mkdirSync(`${process.env.APPDATA}/hades-injector/localData/Versions/`, {recursive: true});
 }
-
+if (!fs.existsSync(`${process.env.APPDATA}/hades-injector/localData/Profiles/`)) {
+    fs.mkdirSync(`${process.env.APPDATA}/hades-injector/localData/Profiles/`, {recursive: true});
+}
 //move old data if exists
 if (fs.existsSync(`${process.env.APPDATA}/hades-cli/`)) {
     fs.moveSync(`${process.env.APPDATA}/hades-cli/`,`${process.env.APPDATA}/hades-injector/localData/Versions/`,  {overwrite: true});
     fs.moveSync(`${process.env.APPDATA}/hades-injector/localData/Versions/data.json`, `${process.env.APPDATA}/hades-injector/localData/data.json`);
-    fs.unlinkSync(`${process.env.APPDATA}/hades-injector/localData/Versions/newest.exe`)
+    fs.unlinkSync(`${process.env.APPDATA}/hades-injector/localData/Versions/newest.exe`);
+}
+if (fs.existsSync(`${process.env.APPDATA}/Hades/`)) {
+    if (!fs.lstatSync(`${process.env.APPDATA}/Hades/`).isSymbolicLink()) {
+        fs.moveSync(`${process.env.APPDATA}/Hades/`,`${process.env.APPDATA}/hades-injector/localData/Profiles/Default/`);
+        fs.symlinkSync(`${process.env.APPDATA}/hades-injector/localData/Profiles/Default/`,`${process.env.APPDATA}/Hades/`,'junction');
+    }
+} else {
+    if (!fs.existsSync(`${process.env.APPDATA}/hades-injector/localData/Profiles/Default/`)) fs.mkdirSync(`${process.env.APPDATA}/hades-injector/localData/Profiles/Default/`);
+    fs.symlinkSync(`${process.env.APPDATA}/hades-injector/localData/Profiles/Default/`,`${process.env.APPDATA}/Hades/`,'junction'); 
 }
 // startup auto login if available
 if (fs.existsSync(`${process.env.APPDATA}/hades-injector/localData/data.json`)) {
@@ -223,6 +235,6 @@ if (fs.existsSync(`${process.env.APPDATA}/hades-injector/localData/data.json`)) 
         loginField.value = f.login;
         passwordField.value = f.password;
         saveData = f;
-        autoUpdate()
+        autoUpdate();
     });
 }
