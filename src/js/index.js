@@ -169,7 +169,6 @@ async function inject() {
     let ConfigFile = fs.readFileSync(`${process.env.APPDATA}/Hades/Hades CFG.ini`, 'utf8').split("\n"); 
     ConfigFile.splice(1,2,`Username=${saveData.login}`,`Password=${saveData.password}`);
     fs.writeFileSync(`${process.env.APPDATA}/Hades/Hades CFG.ini`, ConfigFile.join("\n"), 'utf8');
-    if (!fs.existsSync(`${process.env.APPDATA}/hades-injector/localData/Versions/${vernum.innerHTML}/Hades.dll`))
     exec(`"${process.cwd()}/resources/injector/core.exe" -n GTA5.exe -i "${fs.existsSync(`${process.env.APPDATA}/hades-injector/localData/Versions/${vernum.innerHTML}/Hades.dll`) ? `${process.env.APPDATA}/hades-injector/localData/Versions/${vernum.innerHTML}/Hades.dll` : `${process.env.APPDATA}/hades-injector/localData/Versions/${vernum.innerHTML}/DeadlyKittens Injector/Hades.dll`}"`, (err,stdout,stderr)=>{
         if (!stdout.toLowerCase().includes("error")) {
             success.style.display = null;
